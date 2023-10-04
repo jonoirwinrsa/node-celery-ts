@@ -74,9 +74,10 @@ export class Client {
 
     /**
      * @param name The name of the task to execute.
+     * @param taskId The ID of the task to execute.
      * @returns A `Task` ready to be invoked.
      */
-    public createTask<T>(name: string): Task<T> {
+    public createTask<T>(name: string, taskId?: string): Task<T> {
         return new Task({
             ...this.taskDefaults,
             appId: this.id,
@@ -84,6 +85,7 @@ export class Client {
             brokers: this.brokers,
             failoverStrategy: this.failoverStrategy,
             name,
+            taskId,
         });
     }
 
