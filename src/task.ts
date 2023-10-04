@@ -57,6 +57,7 @@ import * as Uuid from "uuid";
  * @see Client#createTask
  */
 export class Task<T> {
+    private readonly taskId: string;
     private readonly appId: string;
     private readonly backend: ResultBackend;
     private broker: MessageBroker;
@@ -68,6 +69,7 @@ export class Task<T> {
     private readonly timeLimit: [number | null, number | null] = [null, null];
 
     /**
+     * @param taskId Task UUID - can be overwritten by the user.
      * @param appId The UUID of the parent app.
      * @param backend The result backend to use.
      * @param brokers The message brokers to use.
@@ -86,6 +88,7 @@ export class Task<T> {
      * @returns A `Task` that is ready to be applied.
      */
     public constructor({
+        taskId,
         appId,
         backend,
         brokers,
@@ -96,6 +99,7 @@ export class Task<T> {
         queue = "celery",
         softTimeLimit,
     }: TaskOptions) {
+        this.taskId = taskId || Uuid.v4();
         this.appId = appId;
         this.backend = backend;
         this.broker = failoverStrategy(brokers);
@@ -147,7 +151,7 @@ export class Task<T> {
             return this.backend;
         })();
 
-        const id = Uuid.v4();
+        const id = this.taskId;
         const result = new Result<T>(id, backend);
 
         const [packer, encoding] = Task.createPacker(serializer, compression);
@@ -434,6 +438,7 @@ export class Task<T> {
  * Task creation options.
  */
 export interface TaskOptions {
+    taskId?: string;
     appId: string;
     backend: ResultBackend;
     brokers: Array<MessageBroker>;
