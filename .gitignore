@@ -7,3 +7,4 @@ celery-ts-*.tgz
 /coverage/
 *.log
 .vagrant/
+.idea
